@@ -7,9 +7,7 @@ Welcome to the **Shamir Secret Sharing Web App** – a fun, interactive Flask-ba
 ## Overview 🧐
 
 Imagine you have a secret \( m \) over \( \mathbb{Z}_p \). With our app, we generate a random polynomial:
-$\[
-f(x) = m + a_1 x + a_2 x^2 + \dots + a_{t-1} x^{t-1} \pmod{p}
-\]$
+$f(x) = m + a_1 x + a_2 x^2 + \dots + a_{t-1} x^{t-1} \pmod{p}$
 - **Shares:** Each share is represented as a point \( (i, f(i) \mod p) \).
 - **Threshold:** At least \( t \) shares are needed to reconstruct the secret \( m = f(0) \) via Lagrange interpolation.
 
