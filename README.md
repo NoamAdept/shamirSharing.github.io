@@ -3,6 +3,14 @@
 Welcome to the **Shamir Secret Sharing Web App** – a fun, interactive Flask-based tool that demonstrates the magic of Shamir Secret Sharing! This app lets you convert a message into a secret number, split it into multiple shares using a random polynomial, and reconstruct the secret when enough shares come together. Let’s dive in! 🚀
 
 
+## How does it work?
+
+<img width="533" alt="image" src="https://github.com/user-attachments/assets/6e6613f4-b3cf-4d1f-aac8-65cdf81d4e42" />
+<img width="659" alt="image" src="https://github.com/user-attachments/assets/8f853cbe-980b-4661-8a8c-640743b0406e" />
+
+Source: Joy of Cryptography
+
+
 ## Features 🎉
 
 - **Message Encoding/Decoding:**  
