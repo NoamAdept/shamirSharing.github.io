@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shamir Secret Sharing Enhanced</title>
+  <title>Secret Sharing Demo - Inspired by Chap3</title>
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Plotly Library -->
@@ -11,167 +11,196 @@
   <!-- MathJax for rendering LaTeX equations -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
-    /* Global Reset & Base Fonts */
+    /* Global Reset */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+    /* Inspired background: a subtle gradient reminiscent of academic paper textures */
     body {
-      background: linear-gradient(135deg, #ffecd2, #fcb69f);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      padding: 20px;
-      text-align: center;
+      background: linear-gradient(135deg, #1a1a1a, #323232);
+      font-family: 'Georgia', serif;
+      padding: 30px;
+      color: #ddd;
+      line-height: 1.6;
     }
-    /* Mac-like Window Container */
-    .window {
-      max-width: 800px;
-      margin: 40px auto;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    /* Main container with a classic academic paper vibe */
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #252525;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       overflow: hidden;
     }
-    .window-header {
-      background: #f1f1f1;
-      padding: 8px 10px;
+    /* Tab Navigation styling */
+    .tabs {
       display: flex;
-      align-items: center;
-      border-bottom: 1px solid #ccc;
+      background: #333;
+      border-bottom: 2px solid #444;
     }
-    .window-buttons {
-      display: flex;
-      gap: 6px;
-      margin-right: 10px;
-    }
-    .window-buttons span {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .red { background: #ff605c; }
-    .yellow { background: #ffbd44; }
-    .green { background: #00ca4e; }
-    .window-title {
-      font-size: 16px;
-      color: #333;
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
       font-weight: bold;
+      transition: background 0.3s, color 0.3s;
+      border-right: 1px solid #444;
     }
-    /* Window Content Styles */
-    .window-content {
-      padding: 20px;
-      text-align: left;
+    .tab:last-child {
+      border-right: none;
     }
-    h2 {
-      margin-top: 20px;
-      color: #333;
+    .tab:hover {
+      background: #444;
     }
-    p, li, pre {
-      font-size: 14px;
-      line-height: 1.5;
-      color: #555;
+    .active-tab {
+      background: #007aff;
+      color: #fff;
     }
-    ul {
-      margin: 10px 0;
-      list-style-type: disc;
-      padding-left: 20px;
+    /* Tab Contents with a fade-in animation */
+    .tab-content {
+      display: none;
+      padding: 25px;
+      animation: fadeIn 0.5s;
     }
-    pre {
-      background: #f9f9f9;
-      border: 1px solid #ccc;
-      padding: 10px;
-      width: 95%;
-      overflow-x: auto;
-      white-space: pre-wrap;
-    }
-    label {
-      font-weight: bold;
-      margin-top: 10px;
+    .tab-content.active {
       display: block;
     }
-    /* Slider Styles */
-    input[type=range] {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Headings and academic typography */
+    h2 {
+      margin-bottom: 15px;
+      color: #fff;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+    p, li, pre {
+      font-size: 15px;
+      margin: 10px 0;
+      color: #ccc;
+    }
+    ul {
+      margin-left: 20px;
+    }
+    pre {
+      background: #333;
+      border: 1px solid #444;
+      padding: 15px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      border-radius: 4px;
+      color: #eee;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    /* Form Elements with refined styling */
+    label {
+      font-weight: bold;
+      margin-top: 15px;
+      display: block;
+      color: #bbb;
+    }
+    input[type=range], input[type=file] {
       width: 90%;
       margin: 10px 0;
       display: block;
-      transition: all 0.3s ease;
     }
     .slider-value {
       font-size: 14px;
-      color: #333;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
+      color: #aaa;
     }
     button {
-      padding: 10px 20px;
-      margin: 15px 5px;
+      padding: 12px 25px;
+      margin: 10px 5px 20px 0;
       border: none;
       border-radius: 4px;
       background: #007aff;
       color: #fff;
-      font-size: 14px;
+      font-size: 15px;
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
     }
     button:hover {
-      background: #0051a8;
-      transform: scale(1.02);
+      background: #005bb5;
+      transform: scale(1.03);
     }
     textarea {
-      width: 95%;
-      height: 60px;
-      padding: 8px;
+      width: 90%;
+      height: 70px;
+      padding: 10px;
       border-radius: 4px;
-      border: 1px solid #ccc;
+      border: 1px solid #555;
       resize: vertical;
+      background: #333;
+      color: #ddd;
       font-family: monospace;
     }
-    /* Plot Div */
+    /* Plot Div styling to blend with the academic look */
     #plotDiv {
       width: 90%;
       height: 400px;
       margin: 20px auto;
+      border: 1px solid #444;
+      background: #1a1a1a;
     }
-    /* Equation Display */
+    /* Equation Display styling */
     #poly-equation {
-      margin-top: 10px;
-      font-size: 18px;
+      margin-top: 15px;
+      font-size: 20px;
       font-weight: bold;
-      color: #333;
       text-align: center;
+      color: #fff;
+    }
+    /* Visual Secret Sharing Canvases */
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .canvas-container canvas {
+      border: 1px solid #444;
+      margin: 10px;
+      width: 400px;
+      max-width: 100%;
+      height: auto;
     }
     /* Responsive Adjustments */
     @media (max-width: 600px) {
-      .window {
-        width: 95%;
+      .tab {
+        font-size: 14px;
+        padding: 10px;
       }
       button, input[type=range] {
         width: 100%;
+      }
+      .canvas-container {
+        flex-direction: column;
+        align-items: center;
       }
     }
   </style>
 </head>
 <body>
-  <div class="window">
-    <div class="window-header">
-      <div class="window-buttons">
-        <span class="red"></span>
-        <span class="yellow"></span>
-        <span class="green"></span>
-      </div>
-      <div class="window-title">Shamir Secret Sharing Enhanced</div>
+  <div class="container">
+    <!-- Tab Navigation -->
+    <div class="tabs">
+      <div class="tab active-tab" onclick="showTab('shamir')">Shamir Secret Sharing</div>
+      <div class="tab" onclick="showTab('visual')">Visual Secret Sharing</div>
     </div>
-    <div class="window-content">
-      <!-- Rules and Explanation -->
-      <h2>Rules &amp; Example</h2>
+    <!-- Shamir Secret Sharing Tab -->
+    <div id="shamir" class="tab-content active">
+      <h2>Shamir Secret Sharing: Rules &amp; Example</h2>
       <p><strong>Secret:</strong> The number you want to protect.</p>
       <p><strong>Coefficients:</strong> Random numbers that hide the secret.</p>
       <p><strong>Share:</strong> A point (x, f(x)) on the polynomial.</p>
       <p><strong>Threshold (k):</strong> Minimum shares needed to recover the secret.</p>
-      <p><strong>Reconstruction:</strong> With k shares, use interpolation to recover the secret.</p>
       <p><strong>Example:</strong> Over Z₁₁ (p = 11) with a 3-out-of-5 scheme:</p>
-      <p style="font-family: monospace;">f(x) = 1·x² + 4·x + 7</p>
+      <pre>f(x) = 1·x² + 4·x + 7</pre>
       <ul>
         <li>User 1: (1, 1)</li>
         <li>User 2: (2, 8)</li>
@@ -181,22 +210,19 @@
       </ul>
       <p>Any 3 shares can recover the secret 7.</p>
 
-      <!-- Input Form for Shamir Secret Sharing -->
+      <!-- Shamir Input Form -->
       <label for="secret">Secret (Number):</label>
       <div class="slider-value">Secret: <span id="secret-display">123</span></div>
       <input type="range" id="secret" min="0" max="100000" value="123"
              oninput="document.getElementById('secret-display').innerText = this.value;">
-
       <label for="n">Number of Shares (n):</label>
       <div class="slider-value">n: <span id="n-display">5</span></div>
       <input type="range" id="n" min="2" max="10" value="5"
              oninput="document.getElementById('n-display').innerText = this.value; document.getElementById('k').max = this.value;">
-
       <label for="k">Threshold (k):</label>
       <div class="slider-value">k: <span id="k-display">3</span></div>
       <input type="range" id="k" min="2" max="5" value="3"
              oninput="document.getElementById('k-display').innerText = this.value;">
-
       <button onclick="generateShares()">Generate Shares</button>
 
       <h2>Shares</h2>
@@ -210,16 +236,45 @@
       <h2>Visualization</h2>
       <button onclick="plotShares()">Plot Shares &amp; Polynomial</button>
       <div id="plotDiv"></div>
-      <!-- Display Polynomial Equation -->
       <div id="poly-equation"></div>
+    </div>
+
+    <!-- Visual Secret Sharing Tab -->
+    <div id="visual" class="tab-content">
+      <h2>Visual Secret Sharing</h2>
+      <p>
+        Upload a <em>black‑and‑white</em> image. This demo converts the image to binary (using a fixed threshold)
+        and splits it into two shares using a 2‑out‑of‑2 scheme. Overlay the shares to reveal the secret image.
+      </p>
+      <input type="file" id="upload-image" accept="image/*">
+      <button onclick="generateVisualShares()">Generate Visual Shares</button>
+      <div class="canvas-container">
+        <canvas id="share1Canvas"></canvas>
+        <canvas id="share2Canvas"></canvas>
+      </div>
+      <button onclick="reconstructVisual()">Reconstruct Visual Secret</button>
+      <div class="canvas-container">
+        <canvas id="reconstructedCanvas"></canvas>
+      </div>
+      <!-- Hidden canvas for processing -->
+      <canvas id="originalCanvas" style="display:none;"></canvas>
     </div>
   </div>
 
   <script>
-    // Simulated backend endpoints using local functions.
-    // In a real-world demo these would be AJAX calls to a server.
+    /* ------------------- Tab Switching Functionality ------------------- */
+    function showTab(tabId) {
+      $('.tab-content').removeClass('active');
+      $('.tab').removeClass('active-tab');
+      $('#' + tabId).addClass('active');
+      $('.tabs .tab').each(function(){
+        if($(this).text().toLowerCase().indexOf(tabId) !== -1){
+          $(this).addClass('active-tab');
+        }
+      });
+    }
 
-    // Generates shares using a random polynomial (over real numbers for demo purposes).
+    /* ------------------- Shamir Secret Sharing Functions ------------------- */
     function generateShares() {
       let secret = parseFloat(document.getElementById("secret").value);
       let n = parseInt(document.getElementById("n").value);
@@ -241,21 +296,17 @@
         shares.push([i, y]);
       }
 
-      // Update shares display and clear reconstruction textarea.
       document.getElementById("shares-output").innerText = JSON.stringify(shares, null, 2);
       document.getElementById("selected-shares").value = "";
       document.getElementById("recovered-secret").innerText = "";
-
-      // Save shares for later use in plotting & click selection.
       window.generatedShares = shares;
 
-      // Display the original polynomial (for demo purposes only)
+      // Display the polynomial for demo purposes.
       let polyEquation = formatPolynomial(coeffs);
       document.getElementById("poly-equation").innerHTML = polyEquation;
-      MathJax.typeset(); // re-render MathJax
+      MathJax.typeset();
     }
 
-    // Reconstructs the secret using Lagrange interpolation.
     function reconstructSecret() {
       let sharesText = document.getElementById("selected-shares").value;
       try {
@@ -264,7 +315,6 @@
           alert("Select at least 2 shares for reconstruction.");
           return;
         }
-        // Lagrange interpolation at x = 0 gives the secret (constant term)
         let secret = lagrangeInterpolation(0, shares);
         document.getElementById("recovered-secret").innerText = secret.toFixed(2);
       } catch (error) {
@@ -272,7 +322,6 @@
       }
     }
 
-    // Gaussian elimination to compute exact polynomial coefficients from shares.
     function computePolynomialCoefficients(shares) {
       let t = shares.length;
       let A = [];
@@ -286,7 +335,6 @@
         A.push(row);
         b.push(shares[i][1]);
       }
-      // Gaussian elimination
       for (let i = 0; i < t; i++) {
         let maxRow = i;
         for (let k = i + 1; k < t; k++) {
@@ -320,7 +368,6 @@
       return coeffs;
     }
 
-    // Format polynomial into a LaTeX string for MathJax rendering.
     function formatPolynomial(coeffs) {
       let terms = [];
       for (let i = 0; i < coeffs.length; i++) {
@@ -336,7 +383,6 @@
       return `\\(f(x) = ${terms.join(" + ")}\\)`;
     }
 
-    // Lagrange interpolation (over reals).
     function lagrangeInterpolation(x, shares) {
       let result = 0;
       for (let j = 0; j < shares.length; j++) {
@@ -353,7 +399,6 @@
       return result;
     }
 
-    // Plot the shares and polynomial curve.
     function plotShares() {
       let sharesText = document.getElementById("shares-output").innerText;
       if (!sharesText) {
@@ -368,7 +413,6 @@
         y_vals.push(pair[1]);
       });
 
-      // Generate dense x-values for the polynomial curve.
       let x_curve = [];
       let y_curve = [];
       let minX = Math.min(...x_vals);
@@ -381,7 +425,6 @@
         y_curve.push(lagrangeInterpolation(x, shares));
       }
 
-      // Recompute polynomial coefficients from the generated shares.
       let coeffs;
       try {
         coeffs = computePolynomialCoefficients(shares);
@@ -392,7 +435,6 @@
       document.getElementById("poly-equation").innerHTML = polyEquation;
       MathJax.typeset();
 
-      // Plotly data: curve and points.
       let data = [
         {
           x: x_curve,
@@ -412,30 +454,156 @@
 
       let layout = {
         title: 'Polynomial Curve & Shares',
-        xaxis: { title: 'X' },
-        yaxis: { title: 'Y' },
+        xaxis: { title: 'X', color: '#ccc' },
+        yaxis: { title: 'Y', color: '#ccc' },
         margin: { t: 40 },
-        hovermode: 'closest'
+        hovermode: 'closest',
+        paper_bgcolor: '#252525',
+        plot_bgcolor: '#333',
+        font: { color: '#ccc' }
       };
 
       Plotly.newPlot('plotDiv', data, layout);
 
-      // Add event listener: clicking on a share adds it to the reconstruction list.
       let plotDiv = document.getElementById('plotDiv');
       plotDiv.on('plotly_click', function(data) {
-        // Check if a marker (share) was clicked.
         if (data.points[0].data.name === 'Shares') {
           let xClicked = data.points[0].x;
           let yClicked = data.points[0].y;
           let currentText = document.getElementById("selected-shares").value;
           let sharesArray = currentText ? JSON.parse(currentText) : [];
-          // Avoid duplicate insertion
           if (!sharesArray.some(pt => pt[0] === xClicked && pt[1] === yClicked)) {
             sharesArray.push([xClicked, yClicked]);
             document.getElementById("selected-shares").value = JSON.stringify(sharesArray, null, 2);
           }
         }
       });
+    }
+
+    /* ------------------- Visual Secret Sharing Functions ------------------- */
+    function generateVisualShares() {
+      let fileInput = document.getElementById("upload-image");
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select an image file first.");
+        return;
+      }
+      let file = fileInput.files[0];
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        let img = new Image();
+        img.onload = function() {
+          let origCanvas = document.getElementById("originalCanvas");
+          let ctxOrig = origCanvas.getContext("2d");
+          origCanvas.width = img.width;
+          origCanvas.height = img.height;
+          ctxOrig.drawImage(img, 0, 0);
+          let imageData = ctxOrig.getImageData(0, 0, img.width, img.height);
+          let data = imageData.data;
+          for (let i = 0; i < data.length; i += 4) {
+            let avg = (data[i] + data[i+1] + data[i+2]) / 3;
+            let binary = avg < 128 ? 0 : 255;
+            data[i] = data[i+1] = data[i+2] = binary;
+          }
+          ctxOrig.putImageData(imageData, 0, 0);
+          createVisualShares(origCanvas);
+        }
+        img.src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    }
+
+    function createVisualShares(origCanvas) {
+      let width = origCanvas.width;
+      let height = origCanvas.height;
+      let shareWidth = width * 2;
+      let share1 = document.getElementById("share1Canvas");
+      let share2 = document.getElementById("share2Canvas");
+      share1.width = shareWidth;
+      share1.height = height;
+      share2.width = shareWidth;
+      share2.height = height;
+      let ctx1 = share1.getContext("2d");
+      let ctx2 = share2.getContext("2d");
+      ctx1.fillStyle = "white";
+      ctx1.fillRect(0, 0, shareWidth, height);
+      ctx2.fillStyle = "white";
+      ctx2.fillRect(0, 0, shareWidth, height);
+
+      let origCtx = origCanvas.getContext("2d");
+      let origData = origCtx.getImageData(0, 0, width, height).data;
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          let idx = (y * width + x) * 4;
+          let pixelVal = origData[idx];
+          let isWhite = (pixelVal === 255);
+          let rand = Math.random() < 0.5 ? 0 : 1;
+          let patternShare1, patternShare2;
+          if (isWhite) {
+            if (rand === 0) {
+              patternShare1 = [ "black", "white" ];
+              patternShare2 = [ "black", "white" ];
+            } else {
+              patternShare1 = [ "white", "black" ];
+              patternShare2 = [ "white", "black" ];
+            }
+          } else {
+            if (rand === 0) {
+              patternShare1 = [ "black", "white" ];
+              patternShare2 = [ "white", "black" ];
+            } else {
+              patternShare1 = [ "white", "black" ];
+              patternShare2 = [ "black", "white" ];
+            }
+          }
+          let drawX = x * 2;
+          ctx1.fillStyle = patternShare1[0];
+          ctx1.fillRect(drawX, y, 1, 1);
+          ctx1.fillStyle = patternShare1[1];
+          ctx1.fillRect(drawX + 1, y, 1, 1);
+          ctx2.fillStyle = patternShare2[0];
+          ctx2.fillRect(drawX, y, 1, 1);
+          ctx2.fillStyle = patternShare2[1];
+          ctx2.fillRect(drawX + 1, y, 1, 1);
+        }
+      }
+      upscaleCanvas(share1, 4);
+      upscaleCanvas(share2, 4);
+    }
+
+    function upscaleCanvas(canvas, scale) {
+      canvas.style.width = canvas.width * scale + "px";
+      canvas.style.height = canvas.height * scale + "px";
+    }
+
+    // Reconstruct visual secret by digitally overlaying the two share canvases.
+    function reconstructVisual() {
+      let share1 = document.getElementById("share1Canvas");
+      let share2 = document.getElementById("share2Canvas");
+      if (!share1 || !share2) {
+        alert("Generate the visual shares first.");
+        return;
+      }
+      let recCanvas = document.getElementById("reconstructedCanvas");
+      let width = share1.width;
+      let height = share1.height;
+      recCanvas.width = width;
+      recCanvas.height = height;
+      let recCtx = recCanvas.getContext("2d");
+      let imgData1 = share1.getContext("2d").getImageData(0, 0, width, height);
+      let imgData2 = share2.getContext("2d").getImageData(0, 0, width, height);
+      let recData = recCtx.createImageData(width, height);
+
+      for (let i = 0; i < imgData1.data.length; i += 4) {
+        let r1 = imgData1.data[i];
+        let r2 = imgData2.data[i];
+        let isBlack = (r1 < 128 || r2 < 128);
+        let color = isBlack ? 0 : 255;
+        recData.data[i] = recData.data[i+1] = recData.data[i+2] = color;
+        recData.data[i+3] = 255;
+      }
+      recCtx.putImageData(recData, 0, 0);
+      upscaleCanvas(recCanvas, 4);
     }
   </script>
 </body>
