@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shamir Secret Sharing Enhanced</title>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Plotly Library -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- MathJax for rendering LaTeX equations -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    /* Global Reset & Base Fonts */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    /* Mac-like Window Container */
+    .window {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    .window-header {
+      background: #f1f1f1;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #ccc;
+    }
+    .window-buttons {
+      display: flex;
+      gap: 6px;
+      margin-right: 10px;
+    }
+    .window-buttons span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .red { background: #ff605c; }
+    .yellow { background: #ffbd44; }
+    .green { background: #00ca4e; }
+    .window-title {
+      font-size: 16px;
+      color: #333;
+      font-weight: bold;
+    }
+    /* Window Content Styles */
+    .window-content {
+      padding: 20px;
+      text-align: left;
+    }
+    h2 {
+      margin-top: 20px;
+      color: #333;
+    }
+    p, li, pre {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #555;
+    }
+    ul {
+      margin: 10px 0;
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+    pre {
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 95%;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+    /* Slider Styles */
+    input[type=range] {
+      width: 90%;
+      margin: 10px 0;
+      display: block;
+      transition: all 0.3s ease;
+    }
+    .slider-value {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 15px 5px;
+      border: none;
+      border-radius: 4px;
+      background: #007aff;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background: #0051a8;
+      transform: scale(1.02);
+    }
+    textarea {
+      width: 95%;
+      height: 60px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-family: monospace;
+    }
+    /* Plot Div */
+    #plotDiv {
+      width: 90%;
+      height: 400px;
+      margin: 20px auto;
+    }
+    /* Equation Display */
+    #poly-equation {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+    }
+    /* Responsive Adjustments */
+    @media (max-width: 600px) {
+      .window {
+        width: 95%;
+      }
+      button, input[type=range] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="window-header">
+      <div class="window-buttons">
+        <span class="red"></span>
+        <span class="yellow"></span>
+        <span class="green"></span>
+      </div>
+      <div class="window-title">Shamir Secret Sharing Enhanced</div>
+    </div>
+    <div class="window-content">
+      <!-- Rules and Explanation -->
+      <h2>Rules &amp; Example</h2>
+      <p><strong>Secret:</strong> The number you want to protect.</p>
+      <p><strong>Coefficients:</strong> Random numbers that hide the secret.</p>
+      <p><strong>Share:</strong> A point (x, f(x)) on the polynomial.</p>
+      <p><strong>Threshold (k):</strong> Minimum shares needed to recover the secret.</p>
+      <p><strong>Reconstruction:</strong> With k shares, use interpolation to recover the secret.</p>
+      <p><strong>Example:</strong> Over Z₁₁ (p = 11) with a 3-out-of-5 scheme:</p>
+      <p style="font-family: monospace;">f(x) = 1·x² + 4·x + 7</p>
+      <ul>
+        <li>User 1: (1, 1)</li>
+        <li>User 2: (2, 8)</li>
+        <li>User 3: (3, 6)</li>
+        <li>User 4: (4, 6)</li>
+        <li>User 5: (5, 8)</li>
+      </ul>
+      <p>Any 3 shares can recover the secret 7.</p>
+
+      <!-- Input Form for Shamir Secret Sharing -->
+      <label for="secret">Secret (Number):</label>
+      <div class="slider-value">Secret: <span id="secret-display">123</span></div>
+      <input type="range" id="secret" min="0" max="100000" value="123"
+             oninput="document.getElementById('secret-display').innerText = this.value;">
+
+      <label for="n">Number of Shares (n):</label>
+      <div class="slider-value">n: <span id="n-display">5</span></div>
+      <input type="range" id="n" min="2" max="10" value="5"
+             oninput="document.getElementById('n-display').innerText = this.value; document.getElementById('k').max = this.value;">
+
+      <label for="k">Threshold (k):</label>
+      <div class="slider-value">k: <span id="k-display">3</span></div>
+      <input type="range" id="k" min="2" max="5" value="3"
+             oninput="document.getElementById('k-display').innerText = this.value;">
+
+      <button onclick="generateShares()">Generate Shares</button>
+
+      <h2>Shares</h2>
+      <pre id="shares-output" title="Generated shares will appear here"></pre>
+
+      <h2>Reconstruct Secret</h2>
+      <textarea id="selected-shares" placeholder='Click on points in the plot to add shares here (in JSON format)'></textarea>
+      <button onclick="reconstructSecret()">Reconstruct</button>
+      <p><strong>Recovered Secret:</strong> <span id="recovered-secret"></span></p>
+
+      <h2>Visualization</h2>
+      <button onclick="plotShares()">Plot Shares &amp; Polynomial</button>
+      <div id="plotDiv"></div>
+      <!-- Display Polynomial Equation -->
+      <div id="poly-equation"></div>
+    </div>
+  </div>
+
+  <script>
+    // Simulated backend endpoints using local functions.
+    // In a real-world demo these would be AJAX calls to a server.
+
+    // Generates shares using a random polynomial (over real numbers for demo purposes).
+    function generateShares() {
+      let secret = parseFloat(document.getElementById("secret").value);
+      let n = parseInt(document.getElementById("n").value);
+      let k = parseInt(document.getElementById("k").value);
+
+      // Generate k-1 random coefficients; constant term is the secret.
+      let coeffs = [secret];
+      for (let i = 1; i < k; i++) {
+        coeffs.push(Math.floor(Math.random() * 100));
+      }
+
+      // Generate n shares by evaluating the polynomial at x=1,2,...,n.
+      let shares = [];
+      for (let i = 1; i <= n; i++) {
+        let y = 0;
+        for (let j = 0; j < k; j++) {
+          y += coeffs[j] * Math.pow(i, j);
+        }
+        shares.push([i, y]);
+      }
+
+      // Update shares display and clear reconstruction textarea.
+      document.getElementById("shares-output").innerText = JSON.stringify(shares, null, 2);
+      document.getElementById("selected-shares").value = "";
+      document.getElementById("recovered-secret").innerText = "";
+
+      // Save shares for later use in plotting & click selection.
+      window.generatedShares = shares;
+
+      // Display the original polynomial (for demo purposes only)
+      let polyEquation = formatPolynomial(coeffs);
+      document.getElementById("poly-equation").innerHTML = polyEquation;
+      MathJax.typeset(); // re-render MathJax
+    }
+
+    // Reconstructs the secret using Lagrange interpolation.
+    function reconstructSecret() {
+      let sharesText = document.getElementById("selected-shares").value;
+      try {
+        let shares = JSON.parse(sharesText);
+        if (shares.length < 2) {
+          alert("Select at least 2 shares for reconstruction.");
+          return;
+        }
+        // Lagrange interpolation at x = 0 gives the secret (constant term)
+        let secret = lagrangeInterpolation(0, shares);
+        document.getElementById("recovered-secret").innerText = secret.toFixed(2);
+      } catch (error) {
+        alert("Invalid shares format. Ensure JSON format is used.");
+      }
+    }
+
+    // Gaussian elimination to compute exact polynomial coefficients from shares.
+    function computePolynomialCoefficients(shares) {
+      let t = shares.length;
+      let A = [];
+      let b = [];
+      for (let i = 0; i < t; i++) {
+        let row = [];
+        let x = shares[i][0];
+        for (let j = 0; j < t; j++) {
+          row.push(Math.pow(x, j));
+        }
+        A.push(row);
+        b.push(shares[i][1]);
+      }
+      // Gaussian elimination
+      for (let i = 0; i < t; i++) {
+        let maxRow = i;
+        for (let k = i + 1; k < t; k++) {
+          if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) {
+            maxRow = k;
+          }
+        }
+        [A[i], A[maxRow]] = [A[maxRow], A[i]];
+        [b[i], b[maxRow]] = [b[maxRow], b[i]];
+        let pivot = A[i][i];
+        if (pivot === 0) throw new Error("Singular matrix encountered.");
+        for (let j = i; j < t; j++) {
+          A[i][j] /= pivot;
+        }
+        b[i] /= pivot;
+        for (let k = i + 1; k < t; k++) {
+          let factor = A[k][i];
+          for (let j = i; j < t; j++) {
+            A[k][j] -= factor * A[i][j];
+          }
+          b[k] -= factor * b[i];
+        }
+      }
+      let coeffs = new Array(t);
+      for (let i = t - 1; i >= 0; i--) {
+        coeffs[i] = b[i];
+        for (let j = i + 1; j < t; j++) {
+          coeffs[i] -= A[i][j] * coeffs[j];
+        }
+      }
+      return coeffs;
+    }
+
+    // Format polynomial into a LaTeX string for MathJax rendering.
+    function formatPolynomial(coeffs) {
+      let terms = [];
+      for (let i = 0; i < coeffs.length; i++) {
+        let c = coeffs[i].toFixed(2);
+        if (i === 0) {
+          terms.push(c);
+        } else if (i === 1) {
+          terms.push(c + "\\,x");
+        } else {
+          terms.push(c + "\\,x^{" + i + "}");
+        }
+      }
+      return `\\(f(x) = ${terms.join(" + ")}\\)`;
+    }
+
+    // Lagrange interpolation (over reals).
+    function lagrangeInterpolation(x, shares) {
+      let result = 0;
+      for (let j = 0; j < shares.length; j++) {
+        let [xj, yj] = shares[j];
+        let term = yj;
+        for (let m = 0; m < shares.length; m++) {
+          if (m !== j) {
+            let xm = shares[m][0];
+            term *= (x - xm) / (xj - xm);
+          }
+        }
+        result += term;
+      }
+      return result;
+    }
+
+    // Plot the shares and polynomial curve.
+    function plotShares() {
+      let sharesText = document.getElementById("shares-output").innerText;
+      if (!sharesText) {
+        alert("Generate shares first!");
+        return;
+      }
+      let shares = JSON.parse(sharesText);
+      let x_vals = [];
+      let y_vals = [];
+      shares.forEach(function(pair) {
+        x_vals.push(pair[0]);
+        y_vals.push(pair[1]);
+      });
+
+      // Generate dense x-values for the polynomial curve.
+      let x_curve = [];
+      let y_curve = [];
+      let minX = Math.min(...x_vals);
+      let maxX = Math.max(...x_vals);
+      let startX = minX - 1;
+      let endX = maxX + 1;
+      let step = (endX - startX) / 200;
+      for (let x = startX; x <= endX; x += step) {
+        x_curve.push(x);
+        y_curve.push(lagrangeInterpolation(x, shares));
+      }
+
+      // Recompute polynomial coefficients from the generated shares.
+      let coeffs;
+      try {
+        coeffs = computePolynomialCoefficients(shares);
+      } catch (e) {
+        coeffs = [];
+      }
+      let polyEquation = coeffs.length ? formatPolynomial(coeffs) : "Polynomial cannot be determined.";
+      document.getElementById("poly-equation").innerHTML = polyEquation;
+      MathJax.typeset();
+
+      // Plotly data: curve and points.
+      let data = [
+        {
+          x: x_curve,
+          y: y_curve,
+          mode: 'lines',
+          name: 'Polynomial',
+          line: { color: 'red', width: 2 }
+        },
+        {
+          x: x_vals,
+          y: y_vals,
+          mode: 'markers',
+          name: 'Shares',
+          marker: { color: 'blue', size: 12 }
+        }
+      ];
+
+      let layout = {
+        title: 'Polynomial Curve & Shares',
+        xaxis: { title: 'X' },
+        yaxis: { title: 'Y' },
+        margin: { t: 40 },
+        hovermode: 'closest'
+      };
+
+      Plotly.newPlot('plotDiv', data, layout);
+
+      // Add event listener: clicking on a share adds it to the reconstruction list.
+      let plotDiv = document.getElementById('plotDiv');
+      plotDiv.on('plotly_click', function(data) {
+        // Check if a marker (share) was clicked.
+        if (data.points[0].data.name === 'Shares') {
+          let xClicked = data.points[0].x;
+          let yClicked = data.points[0].y;
+          let currentText = document.getElementById("selected-shares").value;
+          let sharesArray = currentText ? JSON.parse(currentText) : [];
+          // Avoid duplicate insertion
+          if (!sharesArray.some(pt => pt[0] === xClicked && pt[1] === yClicked)) {
+            sharesArray.push([xClicked, yClicked]);
+            document.getElementById("selected-shares").value = JSON.stringify(sharesArray, null, 2);
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
