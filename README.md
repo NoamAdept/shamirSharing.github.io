@@ -2,31 +2,6 @@
 
 Welcome to the **Shamir Secret Sharing Web App** – a fun, interactive Flask-based tool that demonstrates the magic of Shamir Secret Sharing! This app lets you convert a message into a secret number, split it into multiple shares using a random polynomial, and reconstruct the secret when enough shares come together. Let’s dive in! 🚀
 
----
-
-## Overview 🧐
-
-Imagine you have a secret \( m \) over \( \mathbb{Z}_p \). With our app, we generate a random polynomial:
-$f(x) = m + a_1 x + a_2 x^2 + \dots + a_{t-1} x^{t-1} \pmod{p}$
-- **Shares:** Each share is represented as a point \( (i, f(i) \mod p) \).
-- **Threshold:** At least \( t \) shares are needed to reconstruct the secret \( m = f(0) \) via Lagrange interpolation.
-
-### Example 📊
-Consider a scenario over \( \mathbb{Z}_{11} \) with:
-- Secret \( m = 7 \)
-- Threshold \( t = 3 \) (3-out-of-5 scheme)
-
-The polynomial might look like:
-\[
-f(x) = 1\cdot x^2 + 4\cdot x + 7
-\]
-Which generates the shares:
-\[
-\{(1,1),\; (2,8),\; (3,6),\; (4,6),\; (5,8)\}
-\]
-With any **3 shares**, you can recover the secret \( m \)! 🔍
-
----
 
 ## Features 🎉
 
